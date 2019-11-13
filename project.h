@@ -23,14 +23,14 @@ public:
     string get_pwd();
     void set_pwd(string new_pwd);
     virtual ~person();
-}
+};
 
-class details(){
+class details{
 public:
     string name;
     string vendor;
     virtual ~details();
-}
+};
 
 
 class group{
@@ -47,7 +47,7 @@ public:
     void split_calc();
     void add_expense(string vendor, float amt);
     virtual ~group();
-}
+};
 
 
 class main_window: public Window{
