@@ -2,9 +2,52 @@
 #define PROJECT_HEAD
 
 #include "gtkmm.h"
+#include <string.h>
 
 using namespace std;
 using namespace Gtk;
+
+
+extern string file_person;
+extern string file_details;
+
+class person{
+    string pwd;
+public:
+    string name;
+    string grp_name;
+    float tot_exp_grp;
+    float tot_exp_mem;
+    float tot_owe;
+    
+    string get_pwd();
+    void set_pwd(string new_pwd);
+    virtual ~person();
+}
+
+class details(){
+public:
+    string name;
+    string vendor;
+    virtual ~details();
+}
+
+
+class group{
+public:
+    string name;
+    float tot_exp;  //may not be needed
+    vector <person> members;
+    vector <details> details_list;
+    
+    group(string file_person,string file_details);
+    void update_person(string file_person);
+    void update_details(string file_details);
+    void sign_up();
+    void split_calc();
+    void add_expense(string vendor, float amt);
+    virtual ~group();
+}
 
 
 class main_window: public Window{
@@ -26,9 +69,6 @@ protected:
     void close_click();
     void toggle_checkbox();
 };
-
-
-
 
 
 #endif
