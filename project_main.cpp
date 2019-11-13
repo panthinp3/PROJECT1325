@@ -1,9 +1,9 @@
-#include <iostream>
-
-int main()
+#include "project.h"
+#include <gtkmm.h>
+int main(int argc, char** argv)
 {
-  cout<<"Hello World"<<endl;
-  //testing
-  
-  //this is test-2
+    Gtk::Main app(argc, argv);
+    main_window w;
+    Gtk::Main::run(w);
+    return 0;
 }
