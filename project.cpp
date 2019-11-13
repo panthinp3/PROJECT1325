@@ -5,6 +5,22 @@
 using namespace std;
 using namespace Gtk;
 
+
+string file_person="registered_members.txt";
+string file_details="details.txt";
+
+string person::get_pwd()
+{
+    return pwd;
+}
+
+void person::set_pwd(string new_pwd)
+{
+    pwd=new_pwd;
+}
+
+person:: ~person(){}
+
 main_window::main_window()
 {
     set_title("User Login");
