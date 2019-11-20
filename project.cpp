@@ -145,9 +145,9 @@ void main_window::close_click()
     
     string comma = ",";
     
-    for(int i=0;i<2/*G.members.size()*/;i++)    //fix this once group object is created
+    for(int i=0;i<g.members.size();i++)    //fix this once group object is created
     {
-        members_update<<"G.members[i].name"<<comma<<"G.members[i].pwd"<<comma<<"G.members[i].gexist"<<comma<<"G.members[i].grp_name"<<comma<<"G.members[i].tot_exp_grp"<<comma<<"G.members[i].tot_exp_mem"<<comma<<"G.members[i].tot_owe"<<endl;
+        members_update<<g.members[i].name<<comma<<g.members[i].get_pwd()<<comma<<g.members[i].b<<comma<<g.members[i].grp_name<<comma<<g.members[i].tot_exp_grp<<comma<<g.members[i].tot_exp_mem<<comma<<g.members[i].tot_owe<<endl;
     }
     
     details_list_update.open(file_details);     //fix this once group object is created
@@ -160,9 +160,9 @@ void main_window::close_click()
         std::exit(1);
     }
     
-    for(int i=0;i<2/*G.details_list.size()*/;i++)
+    for(int i=0;i<g.details_list.size();i++)
     {
-        details_list_update<<"details_list[i].name"<<comma<<"details_list[i].vendor"<<endl;
+        details_list_update<<details_list[i].name<<comma<<details_list[i].vendor<<comma<<details_list[i].expense<<endl;
     }
     
     std::cout<<"Everything updated closing file"<<endl;        //delete if not wanted
@@ -170,7 +170,6 @@ void main_window::close_click()
     details_list_update.close();
     
     hide();
-    
 }
 
 
