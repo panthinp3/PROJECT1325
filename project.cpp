@@ -128,7 +128,50 @@ main_window::main_window()
 
 void main_window::login_click(){}
 void main_window::signup_click(){}
-void main_window::close_click(){}
+void main_window::close_click()
+{
+    ofstream members_update;
+    ofstream details_list_update;
+    
+    members_update.open(file_person);
+    if (!members_update.is_open())
+    {
+        stringstream message;
+        message << "Unable to open file \""<<file_person<<"\"";
+        Gtk::MessageDialog d(*this, message.str(),false,Gtk::MESSAGE_INFO);
+        d.run();
+        std::exit(1);
+    }
+    
+    string comma = ",";
+    
+    for(int i=0;i<2/*G.members.size()*/;i++)    //fix this once group object is created
+    {
+        members_update<<"G.members[i].name"<<comma<<"G.members[i].pwd"<<comma<<"G.members[i].gexist"<<comma<<"G.members[i].grp_name"<<comma<<"G.members[i].tot_exp_grp"<<comma<<"G.members[i].tot_exp_mem"<<comma<<"G.members[i].tot_owe"<<endl;
+    }
+    
+    details_list_update.open(file_details);     //fix this once group object is created
+    if (!details_list_update.is_open())
+    {
+        stringstream message;
+        message << "Unable to open file \""<<file_details<<"\"";
+        Gtk::MessageDialog d(*this, message.str(),false,Gtk::MESSAGE_INFO);
+        d.run();
+        std::exit(1);
+    }
+    
+    for(int i=0;i<2/*G.details_list.size()*/;i++)
+    {
+        details_list_update<<"details_list[i].name"<<comma<<"details_list[i].vendor"<<endl;
+    }
+    
+    std::cout<<"Everything updated closing file"<<endl;        //delete if not wanted
+    members_update.close();
+    details_list_update.close();
+    
+    hide();
+    
+}
 
 
 void main_window::toggle_checkbox()
