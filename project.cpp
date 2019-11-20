@@ -162,7 +162,7 @@ void main_window::close_click()
     
     for(int i=0;i<g.details_list.size();i++)
     {
-        details_list_update<<details_list[i].name<<comma<<details_list[i].vendor<<comma<<details_list[i].expense<<endl;
+        details_list_update<<g.details_list[i].name<<comma<<g.details_list[i].vendor<<comma<<g.details_list[i].expense<<endl;
     }
     
     std::cout<<"Everything updated closing file"<<endl;        //delete if not wanted
