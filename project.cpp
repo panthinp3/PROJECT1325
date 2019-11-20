@@ -226,7 +226,7 @@ void signup_window::close_click(){
 
 
 
-void main_window::login_click(){}
+//void main_window::login_click(){}
 
 void main_window::signup_click(){
     signup_window window(&(g.members));
