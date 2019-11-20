@@ -37,7 +37,8 @@ group::group()
         p.tot_exp_mem=stof(temp);
         getline(ss, temp);
         p.tot_owe=stof(temp);
-        members.push_back(p);
+        if(p.name!="")
+            members.push_back(p);
     }
     inFile.close();
     
@@ -57,7 +58,8 @@ group::group()
         getline(ss,d.vendor,',');
         getline(ss,temp);
         d.expense=stof(temp);
-        details_list.push_back(d);
+        if(d.name!="")
+            details_list.push_back(d);
     }
     inFile2.close();
     cout<<"this: "<<members[0].name<<endl;
@@ -126,7 +128,9 @@ main_window::main_window()
     add(box);
 }
 
-signup_window::signup_window(vector <person> &members){
+signup_window::signup_window(vector <person>* m){
+    
+    members=m;
     set_title("User Sign Up");
     set_border_width(30);
     resize(400,600);
@@ -188,22 +192,27 @@ void signup_window::toggle_checkbox(){
 }
     
 void signup_window::signup_click(){
+    
+    
     string username, pass, repass;
 
     username = username_entry.get_text();
     pass = pass_entry.get_text();
     repass = repass_entry.get_text();
+    
 
     if(pass==repass){
         person p;
         p.name = username;
         p.set_pwd(pass);
         p.b = 0;
+        p.grp_name="*";
         p.tot_exp_grp = 0.0;
         p.tot_exp_mem = 0.0;
         p.tot_owe = 0.0;
-
-        members.push_back(p);   
+        members->push_back(p);
+        
+        //cout<<"vector: "<<members[0].name<<endl;
     }
     else{
         MessageDialog dialog(*this, "Passwords doesn't match! Enter Again.", false, Gtk::MESSAGE_INFO);
@@ -220,7 +229,7 @@ void signup_window::close_click(){
 void main_window::login_click(){}
 
 void main_window::signup_click(){
-    signup_window window(members);
+    signup_window window(&(g.members));
     Main::run(window);
 }
 
