@@ -126,8 +126,104 @@ main_window::main_window()
     add(box);
 }
 
+signup_window::signup_window(vector <person> &members){
+    set_title("User Sign Up");
+    set_border_width(30);
+    resize(400,600);
+    set_position(Gtk::WIN_POS_CENTER_ALWAYS);
+    box.set_spacing(10);
+
+    username_label.set_markup("<big>Enter name:</big>");
+    box.pack_start(username_label);
+
+    username_entry.set_placeholder_text("eg: Donald Trump");
+    username_entry.set_max_length(15);
+    username_entry.select_region(0, username_entry.get_text_length());
+    box.pack_start(username_entry);
+
+    pass_label.set_markup("<big>Enter your new password:</big>");
+    box.pack_start(pass_label);
+
+    pass_entry.set_placeholder_text("***********");
+    pass_entry.set_visibility(FALSE);
+    pass_entry.set_max_length(20);
+    pass_entry.select_region(0, pass_entry.get_text_length());
+    box.pack_start(pass_entry);
+
+    repass_label.set_markup("<big>Re-enter your new password:</big>");
+    box.pack_start(repass_label);
+
+
+    repass_entry.set_placeholder_text("***********");
+    repass_entry.set_visibility(FALSE);
+    repass_entry.set_max_length(20);
+    repass_entry.select_region(0, repass_entry.get_text_length());
+    box.pack_start(repass_entry);
+
+    checkbutton.set_label("Visible");
+    box.pack_start(checkbutton);
+    checkbutton.signal_toggled().connect(sigc::mem_fun(*this,&signup_window::toggle_checkbox));
+    checkbutton.set_active(false);
+
+    signup_button.add_pixlabel("src/signup.png","Sign Up",0.5,0.5);
+    signup_button.signal_clicked().connect(sigc::mem_fun(*this, &signup_window::signup_click));
+    box.pack_start(signup_button);
+    
+    close_button.add_pixlabel("src/close.png","Close",0.5,0.5);
+    close_button.signal_clicked().connect(sigc::mem_fun(*this, &signup_window::close_click));
+    box.pack_start(close_button);
+    
+    box.show_all();
+    add(box);
+
+}
+
+
+signup_window::~signup_window(){}
+
+
+void signup_window::toggle_checkbox(){
+    pass_entry.set_visibility(checkbutton.get_active());
+    repass_entry.set_visibility(checkbutton.get_active());
+}
+    
+void signup_window::signup_click(){
+    string username, pass, repass;
+
+    username = username_entry.get_text();
+    pass = pass_entry.get_text();
+    repass = repass_entry.get_text();
+
+    if(pass==repass){
+        person p;
+        p.name = username;
+        p.set_pwd(pass);
+        p.b = 0;
+        p.tot_exp_grp = 0.0;
+        p.tot_exp_mem = 0.0;
+        p.tot_owe = 0.0;
+
+        members.push_back(p);   
+    }
+    else{
+        MessageDialog dialog(*this, "Passwords doesn't match! Enter Again.", false, Gtk::MESSAGE_INFO);
+        dialog.run();
+    }
+}
+
+void signup_window::close_click(){
+    hide();
+}
+
+
+
 void main_window::login_click(){}
-void main_window::signup_click(){}
+
+void main_window::signup_click(){
+    signup_window window(members);
+    Main::run(window);
+}
+
 void main_window::close_click()
 {
     ofstream members_update;
