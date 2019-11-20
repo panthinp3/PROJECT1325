@@ -48,7 +48,7 @@ public:
     vector <person> members;
     vector <details> details_list;
     
-    group(string file_person,string file_details);
+    group();
     void update_person(string file_person);
     void update_details(string file_details);
     void sign_up();
