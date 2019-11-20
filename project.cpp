@@ -6,8 +6,8 @@ using namespace std;
 using namespace Gtk;
 
 
-string file_person="registered_members.txt";
-string file_details="details.txt";
+string file_person="src/registered_members.txt";
+string file_details="src/details.txt";
 
 group::group()
 {
