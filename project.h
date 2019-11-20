@@ -98,5 +98,36 @@ public:
 
 };
 
+class split_window:public Window{
+public:
+  split_window();
+  virtual ~split_window();
+protected:
+  Label label1,label2,label3;
+  Image gif_i;
+  Button button1,button2,button3,button4;
+  VBox vbox;
+  HBox hbox1,hbox2,hbox3;
+
+  void add_expense();
+  void pay();
+  void show_details();
+  void log_out();
+};
+
+/*
+class new_group_window:public Window{
+public:
+  new_group_window();
+  virtual ~new_group_window();
+protected:
+  Label label1,label2,label3;
+  Image gif_i;
+  Entry entry1,entry2;
+  Button  button;
+  VBox    vbox;
+  void add_members();
+};
+*/
 
 #endif
