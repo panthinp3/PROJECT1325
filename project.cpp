@@ -9,6 +9,62 @@ using namespace Gtk;
 string file_person="registered_members.txt";
 string file_details="details.txt";
 
+group::group()
+{
+    string line;
+    string temp;
+    ifstream inFile;
+    inFile.open(file_person);
+    if(!inFile.is_open())
+    {
+        cout<<"Could't open member file. exiting..."<<endl;
+        exit(1);
+    }
+    while(!inFile.eof())
+    {
+        person p;
+        getline(inFile,line);
+        stringstream ss(line);
+        getline(ss, p.name, ',');
+        getline(ss, temp, ',');
+        p.set_pwd(temp);
+        getline(ss, temp, ',');
+        p.b=stoi(temp);
+        getline(ss, p.grp_name, ',');
+        getline(ss, temp, ',');
+        p.tot_exp_grp=stof(temp);
+        getline(ss, temp, ',');
+        p.tot_exp_mem=stof(temp);
+        getline(ss, temp);
+        p.tot_owe=stof(temp);
+        members.push_back(p);
+    }
+    inFile.close();
+    
+    ifstream inFile2;
+    inFile2.open(file_details);
+    if(!inFile2.is_open())
+    {
+        cout<<"Could't open details file. exiting..."<<endl;
+        exit(1);
+    }
+    while(!inFile2.eof())
+    {
+        details d;
+        getline(inFile2,line);
+        stringstream ss(line);
+        getline(ss,d.name,',');
+        getline(ss,d.vendor,',');
+        getline(ss,temp);
+        d.expense=stof(temp);
+        details_list.push_back(d);
+    }
+    inFile2.close();
+    cout<<"this: "<<members[0].name<<endl;
+    cout<<"this: "<<details_list[0].vendor<<endl;
+}
+
+
 string person::get_pwd()
 {
     return pwd;
@@ -19,7 +75,6 @@ void person::set_pwd(string new_pwd)
     pwd=new_pwd;
 }
 
-person:: ~person(){}
 
 main_window::main_window()
 {
@@ -75,9 +130,16 @@ void main_window::login_click(){}
 void main_window::signup_click(){}
 void main_window::close_click(){}
 
-main_window::~main_window(){}
 
 void main_window::toggle_checkbox()
 {
     e2.set_visibility(checkbutton.get_active());
 }
+
+main_window::~main_window(){}
+group::~group(){}
+details::~details(){}
+person::~person(){}
+
+
+
