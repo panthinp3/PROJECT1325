@@ -80,12 +80,9 @@ protected:
 };
 
 class signup_window: public Window{
-public:
-	signup_window(vector <person> &members);
-	virtual ~signup_window();
 
 protected:
-	vector <person> members;
+	vector <person>* members;
 	Button signup_button, close_button;
 	Entry username_entry, pass_entry, repass_entry;
 	Label username_label, pass_label, repass_label;
@@ -95,6 +92,9 @@ protected:
 	void signup_click();
 	void close_click();
 	void toggle_checkbox();
+public:
+    signup_window(vector <person>* m);
+    virtual ~signup_window();
 
 };
 
