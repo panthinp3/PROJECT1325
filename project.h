@@ -61,6 +61,7 @@ public:
 class main_window: public Window{
 public:
     main_window();
+    group g;
     virtual ~main_window();
 protected:
     Button b1,b2,b3;  //b1=login, b2=signup, b3=close
