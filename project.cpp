@@ -290,3 +290,163 @@ person::~person(){}
 
 
 
+
+
+//nabin
+void main_window::login_click()
+{
+  //hide();
+  //bool ans=false;
+  int check;
+  string name=e1.get_text();
+  transform(name.begin(),name.end(),name.begin(),::tolower);
+  string password=e2.get_text();
+
+    for(int i=0; i<g.members.size();i++)
+    {
+      cout<<g.members[i].name<<endl;
+      if(name=="" && password=="")
+      {
+        check=3;
+        break;
+      }
+
+      if(name==g.members[i].name && password==g.members[i].get_pwd() && g.members[i].b==1)
+      {
+        check=1;
+        break;
+      }
+      else if(name==g.members[i].name && password==g.members[i].get_pwd()&& g.members[i].b==0)
+      {
+        check=2;
+        break;
+      }
+      else
+      {
+        check=3;
+      }
+    }
+
+    if(check==1)
+    {
+      split_window sp;
+      Gtk::Main::run(sp);
+    }
+    else if(check==2)
+    {
+      cout<<"make new group"<<endl;
+//      new_group_window grp;
+//      Gtk::Main::run(grp);
+    }
+    else if(check==3)
+    {
+      MessageDialog dialog(*this, "User not found. Please try again.",false,MESSAGE_WARNING);
+      dialog.run();
+      dialog.hide();
+      //main_window m1;
+      //Gtk::Main::run(m1);
+    }
+}
+
+
+split_window::split_window()
+{
+  hide();
+  set_title("Split App");
+  set_border_width(10);
+  resize(450,600);
+  set_position(Gtk::WIN_POS_CENTER_ALWAYS);
+  label3.set_markup("<span style=\"italic\">SPLIT!</span>");
+  vbox.pack_start(label3);
+
+  gif_i.set("src/money.gif");
+  vbox.pack_start(gif_i);
+  label1.set_markup("\n\n<big>Total expenses of the group: $</big>\n\n");
+  hbox1.pack_start(label1);
+
+  label2.set_markup("\n\n<big>You owe: $</big>\n\n");
+  hbox1.pack_start(label2);
+
+  vbox.pack_start(hbox1);
+
+  button1.add_pixlabel("src/plus.png","Add new expense",0.5,0.5);
+  button1.signal_clicked().connect(sigc::mem_fun(*this, &split_window::add_expense));
+  vbox.pack_start(button1);
+
+  button2.add_pixlabel("src/pay.png","Pay",0.5,0.5);
+  button2.signal_clicked().connect(sigc::mem_fun(*this,&split_window::pay));
+  vbox.pack_start(button2);
+
+  button3.add_pixlabel("src/details.jpg","Show Details",0.5,0.5);
+  button3.signal_clicked().connect(sigc::mem_fun(*this, &split_window::show_details));
+  vbox.pack_start(button3);
+
+  button4.add_pixlabel("src/out.jpeg","Logout",0.5,0.5);
+  button4.signal_clicked().connect(sigc::mem_fun(*this, &split_window::log_out));
+  vbox.pack_start(button4);
+
+  vbox.show_all();
+  add(vbox);
+}
+
+void split_window::add_expense(){}
+void split_window::pay(){}
+
+void split_window::show_details(){}
+
+void split_window::log_out()
+{
+  hide();
+  main_window m1;
+  Gtk::Main::run(m1);
+}
+split_window::~split_window(){}
+
+/*
+new_group_window::new_group_window()
+{
+  set_title("Create Group");
+  set_border_width(10);
+  resize(450,600);
+  set_position(Gtk::WIN_POS_CENTER_ALWAYS);
+  label3.set_markup("<span style=\"italic\">SPLIT!</span>");
+  vbox.pack_start(label3);
+
+  gif_i.set("src/money.gif");
+  vbox.pack_start(gif_i);
+
+  label1.set_markup("\n<big>Enter group name: $</big>\n");
+  vbox.pack_start(label1);
+
+  entry1.set_text(" ");
+  entry1.select_region(0,entry1.get_text_length());
+  vbox.pack_start(entry1);
+
+  label2.set_markup("\n<big>Enter no of group members: $</big>\n");
+  vbox.pack_start(label2);
+
+  entry2.set_text(" ");
+  entry2.select_region(0,entry2.get_text_length());
+  vbox.pack_start(entry2);
+
+  button.add_label("OK");
+  button.signal_clicked().connect(sigc::mem_fun(*this,&new_group_window::add_members));
+  vbox.pack_start(button);
+
+  vbox.show_all();
+  add(vbox);
+
+}
+
+new_group_window::~new_group_window(){};
+
+void new_group_window::add_members()
+{
+  main_window m;
+  Gtk::Main::run(m);
+}
+ 
+ */
+
+
+
