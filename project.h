@@ -3,6 +3,12 @@
 
 #include "gtkmm.h"
 #include <string.h>
+#include <fstream>
+#include <vector>
+#include <sstream>
+#include <string>
+#include <iostream>
+
 
 using namespace std;
 using namespace Gtk;
@@ -16,6 +22,7 @@ class person{
 public:
     string name;
     string grp_name;
+    int b;   //b=1 means he/she has a group
     float tot_exp_grp;
     float tot_exp_mem;
     float tot_owe;
@@ -29,6 +36,7 @@ class details{
 public:
     string name;
     string vendor;
+    float expense;
     virtual ~details();
 };
 
