@@ -211,6 +211,10 @@ void signup_window::signup_click(){
         p.tot_exp_mem = 0.0;
         p.tot_owe = 0.0;
         members->push_back(p);
+        hide();
+        MessageDialog dialog(*this,username + " signed up successfully", false, Gtk::MESSAGE_INFO);
+        
+        dialog.run();
         
         //cout<<"vector: "<<members[0].name<<endl;
     }
@@ -295,11 +299,10 @@ person::~person(){}
 //nabin
 void main_window::login_click()
 {
-  //hide();
   //bool ans=false;
   int check;
   string name=e1.get_text();
-  transform(name.begin(),name.end(),name.begin(),::tolower);
+  //transform(name.begin(),name.end(),name.begin(),::tolower);
   string password=e2.get_text();
 
     for(int i=0; i<g.members.size();i++)
@@ -329,6 +332,7 @@ void main_window::login_click()
 
     if(check==1)
     {
+        hide();
       split_window sp;
       Gtk::Main::run(sp);
     }
@@ -402,6 +406,7 @@ void split_window::log_out()
 }
 split_window::~split_window(){}
 
+
 /*
 new_group_window::new_group_window()
 {
@@ -446,7 +451,6 @@ void new_group_window::add_members()
   Gtk::Main::run(m);
 }
  
- */
 
-
+*/
 
