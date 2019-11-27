@@ -1,2 +1,1 @@
-Pramit,Vendor,0
-Bivek,vendor,0
+Name,Vendor,0
