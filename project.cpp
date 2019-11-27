@@ -1,6 +1,7 @@
 
 #include "project.h"
 #include <gtkmm.h>
+#include <map>
 
 using namespace std;
 using namespace Gtk;
@@ -333,8 +334,8 @@ void main_window::login_click()
     if(check==1)
     {
         hide();
-      split_window sp;
-      Gtk::Main::run(sp);
+        split_window sp(&(g.members),name);
+        Gtk::Main::run(sp);
     }
     else if(check==2)
     {
@@ -394,7 +395,61 @@ split_window::split_window()
 }
 
 void split_window::add_expense(){}
-void split_window::pay(){}
+void split_window::pay()
+{
+    string group_name;
+    int index;
+    for(int i=0;i<members->size();i++)
+    {
+        if(members->at(i).name==user_name)
+        {
+            group_name=members->at(i).grp_name;
+            index=i;
+        }
+    }
+    
+    vector <person*> membersof_thisgroup;       //holds the members of a certain group name
+    person* p;
+    
+    for(int i=0;i<members->size();i++)
+    {
+        if(members->at(i).grp_name==group_name)
+        {
+            p=&members->at(i);
+            membersof_thisgroup.push_back(p);
+        }
+    }
+    
+    std::map<std::string,int> owe_info; //hold name and how much you owe them("+" means somebody owes you)
+    //"-" mean you owe them
+    
+    float user_exp;
+    for(int i=0;i<membersof_thisgroup.size();i++)
+    {
+        if(membersof_thisgroup[i]->name==user_name)
+        {
+            user_exp = membersof_thisgroup[i]->tot_exp_mem;
+            break;
+        }
+    }
+    
+    int group_size = membersof_thisgroup.size();
+    
+    for(int i=0;i<membersof_thisgroup.size();i++)
+    {
+        float owe_amt;
+        if(membersof_thisgroup[i]->name!=user_name)
+        {
+            owe_amt = (user_exp-membersof_thisgroup[i]->tot_exp_mem)/group_size;
+            members->at(index).tot_owe+=owe_amt;
+            owe_info.insert({membersof_thisgroup[i]->name,owe_amt});
+        }
+    }
+    
+    pay_window a(membersof_thisgroup,user_name,owe_info);
+    Gtk::Main::run(a);
+    
+}
 
 void split_window::show_details(){}
 
@@ -406,7 +461,71 @@ void split_window::log_out()
 }
 split_window::~split_window(){}
 
+void pay_window::make_buttons(std::map<std::string,int> owe_info)
+{
+    
+    
+    for(std::map<std::string, int>::iterator itr = owe_info.begin(); itr != owe_info.end(); itr++)
+    {
+        stringstream ss;
+        
+        if(itr->second>0)
+        {
+            ss<<itr->first<<" owes you $"<<itr->second;
+            
+        }
+        if(itr->second<=0)
+        {
+            ss<<"You owe "<<itr->first<< "$"<<-itr->second;
+            
+        }
+        string output;
+        output = ss.str();
+        
+        //cout<<output<<endl;
+        
+        Gtk::RadioButton* b=new Gtk::RadioButton(output);
+        all_buttons.push_back(b);
+        
+    }
+    
+    
+        Gtk::RadioButton* b=new Gtk::RadioButton();
+        all_buttons.push_back(b);
+}
 
+pay_window::pay_window( vector <person*> membersof_thisgroup,string username,std::map<std::string,int> owe_info):Close("close"),pay("Pay")
+{
+    members= membersof_thisgroup;
+    set_title("Pay");
+    set_border_width(0);
+    make_buttons(owe_info);
+    cout<<"hello frm the other side"<<endl;
+    
+    for(int i=1;i<members.size();i++)
+    {
+        all_buttons[i]->join_group(*all_buttons[0]);
+    }
+    
+    add(box1);
+    box1.pack_start(box2);
+    box1.pack_start(line);
+    box1.pack_start(box3);
+    
+    for (int i=0;i<members.size();i++)
+    {
+        box2.pack_start(*all_buttons[i]);
+    }
+    box3.pack_start(pay);
+    box3.pack_start(Close);
+    
+    Close.set_can_default();
+    Close.grab_default();
+    
+    Close.signal_clicked().connect(sigc::mem_fun(*this, &pay_window::close));
+    
+    show_all_children();
+}
 /*
 new_group_window::new_group_window()
 {
