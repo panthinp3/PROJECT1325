@@ -102,14 +102,15 @@ public:
 
 class split_window:public Window{
 public:
-  split_window(vector <person>* m,string username, vector<details>*ptr,int user);
+  split_window(vector <person>* m,string username, vector<details>*ptr);
   virtual ~split_window();
+    //group g;
     
 protected:
   string user_name;
   vector <person>* members;
     vector <details>* d;
-  Label label1,label2,label3,label4;
+  Label label1,label2,label3;
   Image gif_i;
   Button button1,button2,button3,button4;
   VBox vbox;
