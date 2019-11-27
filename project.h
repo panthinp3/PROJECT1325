@@ -125,14 +125,18 @@ protected:
 class pay_window:public Window{
     std::vector<Gtk::RadioButton*> all_buttons; 
 public:
-    pay_window( vector <person*> membersof_thisgroup,string username,std::map<std::string,int> owe_info);
     
-    void make_buttons(std::map<std::string,int> owe_info);
+    pay_window( vector <person*> membersof_thisgroup,string username,std::map<std::string,int> map_info);
+    
+    void pay_to();
 protected:
+    vector <shared_ptr<Label>> labels;
+    std::map<std::string,int> owe_info;
     vector <person*> members;
+    string user_name;
     void on_button_clicked();
-    Gtk::VBox box1, box2, box3;
-    Gtk::Separator line;
+    Gtk::VBox vbox;
+    
     Gtk::Button Close,pay;
 };
 
