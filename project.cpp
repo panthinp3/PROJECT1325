@@ -333,8 +333,8 @@ void main_window::login_click()
 
     if(check==1)
     {
-        hide();
-        split_window sp(&(g.members),name);
+        //hide();
+        split_window sp(&(g.members),name, &g.details_list);
         Gtk::Main::run(sp);
     }
     else if(check==2)
@@ -354,9 +354,13 @@ void main_window::login_click()
 }
 
 
-split_window::split_window()
+split_window::split_window(vector <person>* m,string username, vector<details>*ptr)
 {
-  hide();
+  //hide();
+    
+    user_name=username;
+    members=m;
+    d=ptr;
   set_title("Split App");
   set_border_width(10);
   resize(450,600);
@@ -394,7 +398,53 @@ split_window::split_window()
   add(vbox);
 }
 
-void split_window::add_expense(){}
+void split_window::add_expense()
+{
+    Window w;
+    Dialog* dialog= new Dialog();
+    dialog->set_transient_for(w);
+    dialog->set_title("Expense Details");
+    dialog->resize(200,200);
+    Label* label = new Gtk::Label("Enter vendor's name: ");
+    dialog->get_vbox()->pack_start(*label);
+    label->show();
+    Entry* entry = new Entry();
+    dialog->get_vbox()->pack_start(*entry);
+    entry->show();
+    Label* label2 = new Gtk::Label("Enter amount spent: ");
+    dialog->get_vbox()->pack_start(*label2);
+    label2->show();
+    Entry* entry2 = new Entry();
+    dialog->get_vbox()->pack_start(*entry2);
+    entry2->show();
+    dialog->add_button("Ok",1);
+    dialog->add_button("Cancel",0);
+    
+    int result=dialog->run();
+    if(result==0)
+    {
+        delete(dialog);
+    }
+    else
+    {
+        details temp;
+        temp.name=user_name;
+        temp.vendor=entry->get_text();
+        temp.expense=stof(entry2->get_text());
+        d->push_back(temp);
+        
+        int i;
+        for(i=0; i<(*members).size(); i++)
+        {
+            if(members->at(i).name == user_name)
+            {
+                members->at(i).tot_exp_mem += stof(entry2->get_text());
+            }
+             members->at(i).tot_exp_grp += stof(entry2->get_text());
+        }
+        delete (dialog);
+    }
+}
 void split_window::pay()
 {
     string group_name;
@@ -456,8 +506,8 @@ void split_window::show_details(){}
 void split_window::log_out()
 {
   hide();
-  main_window m1;
-  Gtk::Main::run(m1);
+  //main_window m1;
+  //Gtk::Main::run(m1);
 }
 split_window::~split_window(){}
 
@@ -526,50 +576,3 @@ pay_window::pay_window( vector <person*> membersof_thisgroup,string username,std
     
     show_all_children();
 }
-/*
-new_group_window::new_group_window()
-{
-  set_title("Create Group");
-  set_border_width(10);
-  resize(450,600);
-  set_position(Gtk::WIN_POS_CENTER_ALWAYS);
-  label3.set_markup("<span style=\"italic\">SPLIT!</span>");
-  vbox.pack_start(label3);
-
-  gif_i.set("src/money.gif");
-  vbox.pack_start(gif_i);
-
-  label1.set_markup("\n<big>Enter group name: $</big>\n");
-  vbox.pack_start(label1);
-
-  entry1.set_text(" ");
-  entry1.select_region(0,entry1.get_text_length());
-  vbox.pack_start(entry1);
-
-  label2.set_markup("\n<big>Enter no of group members: $</big>\n");
-  vbox.pack_start(label2);
-
-  entry2.set_text(" ");
-  entry2.select_region(0,entry2.get_text_length());
-  vbox.pack_start(entry2);
-
-  button.add_label("OK");
-  button.signal_clicked().connect(sigc::mem_fun(*this,&new_group_window::add_members));
-  vbox.pack_start(button);
-
-  vbox.show_all();
-  add(vbox);
-
-}
-
-new_group_window::~new_group_window(){};
-
-void new_group_window::add_members()
-{
-  main_window m;
-  Gtk::Main::run(m);
-}
- 
-
-*/
-
