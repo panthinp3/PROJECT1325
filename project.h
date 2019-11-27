@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <map>
 
 
@@ -27,7 +28,7 @@ public:
     float tot_exp_grp;
     float tot_exp_mem;
     float tot_owe;
-    
+
     string get_pwd();
     void set_pwd(string new_pwd);
     virtual ~person();
@@ -48,7 +49,7 @@ public:
     float tot_exp;  //may not be needed
     vector <person> members;
     vector <details> details_list;
-    
+
     group();
     void update_person(string file_person);
     void update_details(string file_details);
@@ -71,8 +72,8 @@ protected:
     Image gif_i;        //gif file
     VBox box;
     CheckButton checkbutton;
-    
-    
+
+
     //signal handlers
     void login_click();
     void signup_click();
@@ -101,13 +102,14 @@ public:
 
 class split_window:public Window{
 public:
-  split_window(vector <person>* m,string username, vector<details>*ptr);
+  split_window(vector <person>* m,string username, vector<details>*ptr,int user);
   virtual ~split_window();
+    group g;
 protected:
   string user_name;
   vector <person>* members;
     vector <details>* d;
-  Label label1,label2,label3;
+  Label label1,label2,label3,label4;
   Image gif_i;
   Button button1,button2,button3,button4;
   VBox vbox;
@@ -120,10 +122,10 @@ protected:
 };
 
 class pay_window:public Window{
-    std::vector<Gtk::RadioButton*> all_buttons; 
+    std::vector<Gtk::RadioButton*> all_buttons;
 public:
     pay_window( vector <person*> membersof_thisgroup,string username,std::map<std::string,int> owe_info);
-    
+
     void make_buttons(std::map<std::string,int> owe_info);
 protected:
     vector <person*> members;
