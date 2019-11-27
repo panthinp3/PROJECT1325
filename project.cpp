@@ -549,7 +549,32 @@ void split_window::pay()
     
 }
 
-void split_window::show_details(){}
+void split_window::show_details()
+{
+    Window w;
+    Dialog *dialog =new Dialog;
+    dialog->set_transient_for(w);
+    dialog->set_border_width(50);
+    dialog->set_size_request(150,150);
+    dialog->set_title("Details");
+
+    for(int i=0;i<(*d).size();i++)
+    {
+        float f=d->at(i).expense;
+        string paid=to_string(f);
+        //string paid=to_string(g.details_list[i].expense);
+        Label *label1=new Label(d->at(i).name+" paid $"+paid+" at "+d->at(i).vendor);
+        dialog->get_content_area()->pack_start(*label1);
+        label1->show();
+    }
+
+    dialog->add_button("OK",0);
+    int i=dialog->run();
+    if(i==0)
+    {
+        dialog->close();
+    }
+}
 
 void split_window::log_out()
 {
