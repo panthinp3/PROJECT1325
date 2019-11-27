@@ -83,7 +83,7 @@ main_window::main_window()
 {
     set_title("User Login");
     set_border_width(30);
-    resize(450,600);
+    resize(450,700);
     set_position(Gtk::WIN_POS_CENTER_ALWAYS);
     box.set_spacing(10);
     
@@ -134,7 +134,7 @@ signup_window::signup_window(vector <person>* m){
     members=m;
     set_title("User Sign Up");
     set_border_width(30);
-    resize(400,600);
+    resize(450,600);
     set_position(Gtk::WIN_POS_CENTER_ALWAYS);
     box.set_spacing(10);
 
@@ -302,12 +302,14 @@ void main_window::login_click()
 {
   //bool ans=false;
   int check;
+    int user=0;
   string name=e1.get_text();
   //transform(name.begin(),name.end(),name.begin(),::tolower);
   string password=e2.get_text();
 
     for(int i=0; i<g.members.size();i++)
     {
+        user++;
       cout<<g.members[i].name<<endl;
       if(name=="" && password=="")
       {
@@ -334,7 +336,7 @@ void main_window::login_click()
     if(check==1)
     {
         //hide();
-        split_window sp(&(g.members),name, &g.details_list);
+        split_window sp(&(g.members),name, &g.details_list,user);
         Gtk::Main::run(sp);
     }
     else if(check==2)
@@ -402,7 +404,7 @@ void main_window::login_click()
 }
 
 
-split_window::split_window(vector <person>* m,string username, vector<details>*ptr)
+split_window::split_window(vector <person>* m,string username, vector<details>*ptr, int user)
 {
   //hide();
     
@@ -411,17 +413,28 @@ split_window::split_window(vector <person>* m,string username, vector<details>*p
     d=ptr;
   set_title("Split App");
   set_border_width(10);
-  resize(450,600);
+  resize(450,700);
   set_position(Gtk::WIN_POS_CENTER_ALWAYS);
   label3.set_markup("<span style=\"italic\">SPLIT!</span>");
   vbox.pack_start(label3);
 
   gif_i.set("src/money.gif");
   vbox.pack_start(gif_i);
-  label1.set_markup("\n\n<big>Total expenses of the group: $</big>\n\n");
+    
+    label4.set_markup("\n<big>Group: </big>"+g.members[user].grp_name);
+    vbox.pack_start(label4);
+    float tot_exp=g.members[user].tot_exp_grp;
+    stringstream ss;
+    ss<<fixed<<setprecision(2)<<tot_exp<<endl;
+    string format;
+    getline(ss,format);
+  label1.set_markup("<big>Total expenses of the group: $</big>"+format+"   \n");
   hbox1.pack_start(label1);
 
-  label2.set_markup("\n\n<big>You owe: $</big>\n\n");
+    float user_owe=g.members[user].tot_owe;
+    ss<<fixed<<setprecision(2)<<user_owe<<endl;
+    getline(ss,format);
+  label2.set_markup("<big>You owe: $</big>"+format+"   \n");
   hbox1.pack_start(label2);
 
   vbox.pack_start(hbox1);
@@ -561,9 +574,11 @@ void split_window::show_details()
     for(int i=0;i<(*d).size();i++)
     {
         float f=d->at(i).expense;
-        string paid=to_string(f);
-        //string paid=to_string(g.details_list[i].expense);
-        Label *label1=new Label(d->at(i).name+" paid $"+paid+" at "+d->at(i).vendor);
+        stringstream ss;
+        ss<<d->at(i).name<<" paid $"<<fixed<<setprecision(2)<<f<<" at "<<d->at(i).vendor<<endl;
+        string  format;
+        getline(ss,format);
+        Label *label1=new Label(format);
         dialog->get_content_area()->pack_start(*label1);
         label1->show();
     }
