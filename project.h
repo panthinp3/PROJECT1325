@@ -133,4 +133,25 @@ protected:
     Gtk::Button Close,pay;
 };
 
+
+class new_group_window:public Window{
+public:
+  new_group_window(vector <person>* m, string gname, int memnum, string name);
+  virtual ~new_group_window();
+
+  void add_clicked();
+  void cancel_clicked();
+
+protected:
+  string creator_name, group_name;
+  vector <person>* members;
+  vector <string> entry_list;
+  Image gif_m;
+  Label label1;
+  vector <shared_ptr<Entry>> entries;
+  Button button1, button2;
+  VBox vbox;
+
+};
+
 #endif
