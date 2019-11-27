@@ -602,10 +602,97 @@ void split_window::log_out()
 }
 split_window::~split_window(){}
 
-void pay_window::make_buttons(std::map<std::string,int> owe_info)
+void pay_window::pay_to()
 {
+    Window w;
+    Dialog *dialog =new Dialog;
+    dialog->set_transient_for(w);
+    dialog->set_border_width(50);
+    dialog->set_size_request(150,150);
+    dialog->set_title("Who do you want to pay?");
+    
+    Label *label1=new Label("Who do you want to pay?");
+    dialog->get_content_area()->pack_start(*label1);
+    label1->show();
+    
+    dialog->add_button("Pay",1);
+    dialog->add_button("Cancel",0);
+    
+    Gtk::Entry *name = new Gtk::Entry();
+    name->set_text("Member name");
+    name->set_max_length(50);
+    name->show();
+    dialog->get_vbox()->pack_start(*name);
+    
+    Label *label2=new Label("How much?");
+    dialog->get_content_area()->pack_start(*label2);
+    label2->show();
+    
+    Gtk::Entry *amount = new Gtk::Entry();
+    amount->set_text("default_text");
+    amount->set_max_length(50);
+    amount->show();
+    dialog->get_vbox()->pack_start(*amount);
     
     
+    
+    int result = dialog->run();
+    
+    if(result==0)
+    {
+        dialog->close();
+        
+    }
+    else if(result==1)
+    {
+        string pay_who = name->get_text();
+        float pay_how_much = stof(amount->get_text());
+
+        for(int i=0; i<members.size(); i++)
+        {
+            if(members[i]->name==user_name)
+            {
+                members[i]->tot_exp_mem+=pay_how_much;
+                members[i]->tot_owe-=pay_how_much;
+            }
+            if(members[i]->name==pay_who)
+            {
+                members[i]->tot_exp_mem-=pay_how_much;
+                members[i]->tot_owe+=pay_how_much;
+            }
+        }
+        stringstream ss;
+        ss<<"You paid "<<pay_who<<" $"<<amount->get_text();
+        MessageDialog d(*this, ss.str(), false, Gtk::MESSAGE_INFO);
+        d.run();
+       dialog->close();
+    }
+     
+    delete dialog;
+    delete label1;
+    delete label2;
+    delete name;
+    delete amount;
+}
+
+pay_window::pay_window( vector <person*> membersof_thisgroup,string username,std::map<std::string,int> map_info):Close("close"),pay("Pay")
+{
+    owe_info = map_info;
+    members= membersof_thisgroup;
+    user_name=username;
+    float break_even = members[0]->tot_exp_grp/ members.size() ;
+    
+    for(int i=0; i<members.size(); i++)
+    {
+        members[i]->tot_owe=members[i]->tot_exp_mem-break_even;
+        
+    }
+    
+    set_title("Pay");
+    set_size_request(400,400);
+    set_border_width(10);
+    
+    add(vbox);
     for(std::map<std::string, int>::iterator itr = owe_info.begin(); itr != owe_info.end(); itr++)
     {
         stringstream ss;
@@ -617,56 +704,32 @@ void pay_window::make_buttons(std::map<std::string,int> owe_info)
         }
         if(itr->second<=0)
         {
-            ss<<"You owe "<<itr->first<< "$"<<-itr->second;
+            ss<<"You owe "<<itr->first<<" $"<<-itr->second;
             
         }
         string output;
         output = ss.str();
         
-        //cout<<output<<endl;
-        
-        Gtk::RadioButton* b=new Gtk::RadioButton(output);
-        all_buttons.push_back(b);
+        shared_ptr<Label> l = make_shared<Label>();
+        l->set_label(output);
+        labels.push_back(l);
         
     }
     
+    for(int i=0;i<labels.size();i++)
+    {
+        vbox.pack_start(*labels.at(i));
+    }
     
-        Gtk::RadioButton* b=new Gtk::RadioButton();
-        all_buttons.push_back(b);
+    pay.signal_pressed().connect(sigc::mem_fun(*this,&pay_window::pay_to));
+    vbox.pack_start(pay);
+    Close.signal_pressed().connect(sigc::mem_fun(*this,&pay_window::close));
+    vbox.pack_start(Close);
+    vbox.show_all();
 }
 
-pay_window::pay_window( vector <person*> membersof_thisgroup,string username,std::map<std::string,int> owe_info):Close("close"),pay("Pay")
-{
-    members= membersof_thisgroup;
-    set_title("Pay");
-    set_border_width(0);
-    make_buttons(owe_info);
-    cout<<"hello frm the other side"<<endl;
-    
-    for(int i=1;i<members.size();i++)
-    {
-        all_buttons[i]->join_group(*all_buttons[0]);
-    }
-    
-    add(box1);
-    box1.pack_start(box2);
-    box1.pack_start(line);
-    box1.pack_start(box3);
-    
-    for (int i=0;i<members.size();i++)
-    {
-        box2.pack_start(*all_buttons[i]);
-    }
-    box3.pack_start(pay);
-    box3.pack_start(Close);
-    
-    Close.set_can_default();
-    Close.grab_default();
-    
-    Close.signal_clicked().connect(sigc::mem_fun(*this, &pay_window::close));
-    
-    show_all_children();
-}
+
+
 
 new_group_window::new_group_window(vector <person>* m, string gname, int memnum, string name)
 {   group_name = gname;
