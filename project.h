@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <map>
 
 
 using namespace std;
@@ -100,9 +101,11 @@ public:
 
 class split_window:public Window{
 public:
-  split_window();
+  split_window(vector <person>* m,string username);
   virtual ~split_window();
 protected:
+  string user_name;
+  vector <person>* members;	
   Label label1,label2,label3;
   Image gif_i;
   Button button1,button2,button3,button4;
@@ -115,6 +118,19 @@ protected:
   void log_out();
 };
 
+class pay_window:public Window{
+    std::vector<Gtk::RadioButton*> all_buttons; 
+public:
+    pay_window( vector <person*> membersof_thisgroup,string username,std::map<std::string,int> owe_info);
+    
+    void make_buttons(std::map<std::string,int> owe_info);
+protected:
+    vector <person*> members;
+    void on_button_clicked();
+    Gtk::VBox box1, box2, box3;
+    Gtk::Separator line;
+    Gtk::Button Close,pay;
+};
 /*
 class new_group_window:public Window{
 public:
