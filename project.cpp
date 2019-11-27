@@ -1,4 +1,3 @@
-
 #include "project.h"
 #include <gtkmm.h>
 #include <map>
@@ -63,8 +62,10 @@ group::group()
             details_list.push_back(d);
     }
     inFile2.close();
-    cout<<"this: "<<members[0].name<<endl;
-    cout<<"this: "<<details_list[0].vendor<<endl;
+    
+    details_list.erase(details_list.begin());
+    //cout<<"this: "<<members[0].name<<endl;
+    //cout<<"this: "<<details_list[0].vendor<<endl;
 }
 
 
@@ -134,7 +135,7 @@ signup_window::signup_window(vector <person>* m){
     members=m;
     set_title("User Sign Up");
     set_border_width(30);
-    resize(450,600);
+    resize(450,700);
     set_position(Gtk::WIN_POS_CENTER_ALWAYS);
     box.set_spacing(10);
 
@@ -270,6 +271,7 @@ void main_window::close_click()
         std::exit(1);
     }
     
+    details_list_update<<"Name"<<comma<<"Vendor"<<comma<<0.0<<endl;
     for(int i=0;i<g.details_list.size();i++)
     {
         details_list_update<<g.details_list[i].name<<comma<<g.details_list[i].vendor<<comma<<g.details_list[i].expense<<endl;
@@ -302,14 +304,12 @@ void main_window::login_click()
 {
   //bool ans=false;
   int check;
-    int user=0;
   string name=e1.get_text();
   //transform(name.begin(),name.end(),name.begin(),::tolower);
   string password=e2.get_text();
 
     for(int i=0; i<g.members.size();i++)
     {
-        user++;
       cout<<g.members[i].name<<endl;
       if(name=="" && password=="")
       {
@@ -336,14 +336,14 @@ void main_window::login_click()
     if(check==1)
     {
         //hide();
-        split_window sp(&(g.members),name, &g.details_list,user);
+        split_window sp(&(g.members),name, &g.details_list);
         Gtk::Main::run(sp);
     }
     else if(check==2)
     {
       MessageDialog di(*this, "You do not have a group. Please create a new one!.",false,MESSAGE_INFO);
         di.run();
-        di.hide();  
+        di.hide();
         Window x;
         Dialog *dialog = new Dialog();
         dialog->set_transient_for(x);
@@ -404,7 +404,7 @@ void main_window::login_click()
 }
 
 
-split_window::split_window(vector <person>* m,string username, vector<details>*ptr, int user)
+split_window::split_window(vector <person>* m,string username, vector<details>*ptr)
 {
   //hide();
     
@@ -418,24 +418,25 @@ split_window::split_window(vector <person>* m,string username, vector<details>*p
   label3.set_markup("<span style=\"italic\">SPLIT!</span>");
   vbox.pack_start(label3);
 
-  gif_i.set("src/money.gif");
+    gif_i.set("src/money.gif");
   vbox.pack_start(gif_i);
+    int i;
+    for(i=0; i< (*members).size() ; i++)
+    {
+        if(user_name==members->at(i).name)
+            break;
+    }
+    label2.set_markup("Group: " + members->at(i).grp_name);
+    vbox.pack_start(label2);
     
-    label4.set_markup("\n<big>Group: </big>"+g.members[user].grp_name);
-    vbox.pack_start(label4);
-    float tot_exp=g.members[user].tot_exp_grp;
+    
     stringstream ss;
-    ss<<fixed<<setprecision(2)<<tot_exp<<endl;
+    ss<<fixed<<setprecision(2)<<members->at(i).tot_exp_grp<<endl;
     string format;
     getline(ss,format);
-  label1.set_markup("<big>Total expenses of the group: $</big>"+format+"   \n");
+  label1.set_markup("\n\n<big>Total expenses of the group: $</big>" + format);
   hbox1.pack_start(label1);
 
-    float user_owe=g.members[user].tot_owe;
-    ss<<fixed<<setprecision(2)<<user_owe<<endl;
-    getline(ss,format);
-  label2.set_markup("<big>You owe: $</big>"+format+"   \n");
-  hbox1.pack_start(label2);
 
   vbox.pack_start(hbox1);
 
@@ -574,11 +575,13 @@ void split_window::show_details()
     for(int i=0;i<(*d).size();i++)
     {
         float f=d->at(i).expense;
+        //string paid=to_string(f);
+        
         stringstream ss;
-        ss<<d->at(i).name<<" paid $"<<fixed<<setprecision(2)<<f<<" at "<<d->at(i).vendor<<endl;
-        string  format;
+        ss<<fixed<<setprecision(2)<<f<<endl;
+        string format;
         getline(ss,format);
-        Label *label1=new Label(format);
+        Label *label1=new Label(d->at(i).name+" paid $"+format+" at "+d->at(i).vendor);
         dialog->get_content_area()->pack_start(*label1);
         label1->show();
     }
@@ -695,7 +698,7 @@ new_group_window::new_group_window(vector <person>* m, string gname, int memnum,
     button2.signal_clicked().connect(sigc::mem_fun(*this, &new_group_window::cancel_clicked));
     vbox.pack_start(button2);
 
-    vbox.show_all();    
+    vbox.show_all();
 }
 
 new_group_window::~new_group_window(){
@@ -763,7 +766,7 @@ void new_group_window::add_clicked(){
             MessageDialog d2(*this, "Members added to the group!",false,MESSAGE_INFO);
             d2.run();
             hide();
-        }       
+        }
 
     }
 
