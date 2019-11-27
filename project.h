@@ -101,11 +101,12 @@ public:
 
 class split_window:public Window{
 public:
-  split_window(vector <person>* m,string username);
+  split_window(vector <person>* m,string username, vector<details>*ptr);
   virtual ~split_window();
 protected:
   string user_name;
-  vector <person>* members;	
+  vector <person>* members;
+    vector <details>* d;
   Label label1,label2,label3;
   Image gif_i;
   Button button1,button2,button3,button4;
@@ -131,19 +132,5 @@ protected:
     Gtk::Separator line;
     Gtk::Button Close,pay;
 };
-/*
-class new_group_window:public Window{
-public:
-  new_group_window();
-  virtual ~new_group_window();
-protected:
-  Label label1,label2,label3;
-  Image gif_i;
-  Entry entry1,entry2;
-  Button  button;
-  VBox    vbox;
-  void add_members();
-};
-*/
 
 #endif
