@@ -1,4 +1,2 @@
 Pramit,Vendor,0
 Bivek,vendor,0
-Pramit,Walmart,234
-Pramit,Kroger,2
