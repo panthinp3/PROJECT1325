@@ -339,9 +339,57 @@ void main_window::login_click()
     }
     else if(check==2)
     {
-      cout<<"make new group"<<endl;
-//      new_group_window grp;
-//      Gtk::Main::run(grp);
+      MessageDialog di(*this, "You do not have a group. Please create a new one!.",false,MESSAGE_INFO);
+        di.run();
+        di.hide();  
+        Window x;
+        Dialog *dialog = new Dialog();
+        dialog->set_transient_for(x);
+        dialog->set_title("Create New Group");
+        dialog->set_size_request(400,200);
+        dialog->set_border_width(10);
+
+        Label *label1 = new Label("Enter group name:");
+        dialog->get_content_area()->pack_start(*label1);
+        label1->show();
+
+        Entry *entry1 = new Entry();
+        entry1->set_placeholder_text("eg: Apartment 134");
+        entry1->set_max_length(20);
+        entry1->show();
+        dialog->get_content_area()->pack_start(*entry1);
+
+
+        Label *label2 = new Label("Enter number of members:");
+        dialog->get_content_area()->pack_start(*label2);
+        label2->show();
+
+        Entry *entry2 = new Entry();
+        entry2->set_placeholder_text("eg: 5 ");
+        entry2->set_max_length(3);
+        entry2->show();
+        dialog->get_content_area()->pack_start(*entry2);
+
+        dialog->add_button("Ok", 0);
+        dialog->add_button("Cancel", 1);
+
+        int result = dialog->run();
+
+        if(result == 0){
+            string gname = entry1->get_text();
+            int memnum = stoi(entry2->get_text());
+            
+            new_group_window w(&(g.members), gname, memnum, name);
+            Gtk::Main::run(w);
+        }
+
+        dialog->close();
+
+        delete dialog;
+        delete label1;
+        delete entry1;
+        delete label2;
+        delete entry2;
     }
     else if(check==3)
     {
@@ -575,4 +623,112 @@ pay_window::pay_window( vector <person*> membersof_thisgroup,string username,std
     Close.signal_clicked().connect(sigc::mem_fun(*this, &pay_window::close));
     
     show_all_children();
+}
+
+new_group_window::new_group_window(vector <person>* m, string gname, int memnum, string name)
+{   group_name = gname;
+    creator_name = name;
+    members = m;
+    set_title("New Group Information");
+    set_size_request(400, memnum*50+150);
+    set_border_width(10);
+    add(vbox);
+
+    label1.set_text("Enter group members name:");
+    vbox.pack_start(label1);
+
+    for (int i = 0; i < memnum; i++){
+        shared_ptr<Entry> e = make_shared<Entry>();
+        e->set_placeholder_text("eg: Ben");
+        entries.push_back(e);
+    }
+
+    for(int i = 0; i < entries.size(); i++){
+        vbox.pack_start(*entries.at(i));
+    }
+
+    button1.add_label("Add");
+    button1.signal_clicked().connect(sigc::mem_fun(*this, &new_group_window::add_clicked));
+    vbox.pack_start(button1);
+
+    button2.add_label("Cancel");
+    button2.signal_clicked().connect(sigc::mem_fun(*this, &new_group_window::cancel_clicked));
+    vbox.pack_start(button2);
+
+    vbox.show_all();    
+}
+
+new_group_window::~new_group_window(){
+
+}
+
+void new_group_window::add_clicked(){
+    bool valid = true;
+    bool found = false;
+
+    
+
+    for(int i = 0; i < entries.size(); i++){
+        entry_list.push_back(entries.at(i)->get_text());
+        if(entry_list.at(i) == creator_name){
+            entry_list.clear();
+            valid = false;
+            MessageDialog d1(*this, "Creator of the group cannot be added to a group!",false,MESSAGE_WARNING);
+            d1.run();
+            break;
+        }
+    }
+
+
+    if(valid){
+        for(int i = 0; i < entry_list.size(); i++){
+        found = false;
+            for(int j = 0; j < members->size(); j++){
+                if(entry_list.at(i) == members->at(j).name){
+                    found = true;
+                    break;
+                }
+
+            }
+            if(!found){
+                entry_list.clear();
+                MessageDialog d(*this, "Non registered members cannot be added to a group!",false,MESSAGE_WARNING);
+                d.run();
+                break;
+            }
+        
+        }
+
+        if(found){
+
+            for(int i = 0; i < members->size(); i++){
+                if (members->at(i).name == creator_name){
+                    members->at(i).b = 1;
+                    members->at(i).grp_name = group_name;
+                    break;
+                }
+            }
+
+
+
+            for(int i = 0; i < entry_list.size(); i++){
+                for(int j = 0; j < members->size(); j++){
+                    if(entry_list.at(i) == members->at(j).name){
+                        members->at(j).b = 1;
+                        members->at(j).grp_name = group_name;
+                        break;
+                    }
+                }
+            }
+            MessageDialog d2(*this, "Members added to the group!",false,MESSAGE_INFO);
+            d2.run();
+            hide();
+        }       
+
+    }
+
+}
+
+void new_group_window::cancel_clicked(){
+    hide();
 }
