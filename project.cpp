@@ -1,4 +1,5 @@
 
+
 #include "project.h"
 #include <gtkmm.h>
 #include <map>
@@ -42,7 +43,7 @@ group::group()
             members.push_back(p);
     }
     inFile.close();
-    
+
     ifstream inFile2;
     inFile2.open(file_details);
     if(!inFile2.is_open())
@@ -86,51 +87,51 @@ main_window::main_window()
     resize(450,600);
     set_position(Gtk::WIN_POS_CENTER_ALWAYS);
     box.set_spacing(10);
-    
+
     l3.set_markup("<span style=\"italic\">SPLIT!</span>");
     box.pack_start(l3);
-    
+
     gif_i.set("src/money.gif");
     box.pack_start(gif_i);
-    
+
     l1.set_markup("<big>Enter Name:</big>");
     box.pack_start(l1);
-    
+
     e1.set_placeholder_text("eg: Pramit");
     e1.set_max_length(15);
     box.pack_start(e1);
-    
+
     l2.set_markup("<big>Enter Password:</big>");
     box.pack_start(l2);
-    
+
     e2.set_placeholder_text("***********");
     e2.set_visibility(FALSE);
     e2.set_max_length(20);
     box.pack_start(e2);
-    
+
     checkbutton.set_label("Visible");
     box.pack_start(checkbutton);
     checkbutton.signal_toggled().connect(sigc::mem_fun(*this,&main_window::toggle_checkbox));
     checkbutton.set_active(true);
-    
+
     b1.add_pixlabel("src/login.png","Login",0.5,0.5);
     b1.signal_clicked().connect(sigc::mem_fun(*this, &main_window::login_click));
     box.pack_start(b1);
-    
+
     b2.add_pixlabel("src/signup.png","Sign Up",0.5,0.5);
     b2.signal_clicked().connect(sigc::mem_fun(*this, &main_window::signup_click));
     box.pack_start(b2);
-    
+
     b3.add_pixlabel("src/close.png","Close",0.5,0.5);
     b3.signal_clicked().connect(sigc::mem_fun(*this, &main_window::close_click));
     box.pack_start(b3);
-    
+
     box.show_all();
     add(box);
 }
 
 signup_window::signup_window(vector <person>* m){
-    
+
     members=m;
     set_title("User Sign Up");
     set_border_width(30);
@@ -173,11 +174,11 @@ signup_window::signup_window(vector <person>* m){
     signup_button.add_pixlabel("src/signup.png","Sign Up",0.5,0.5);
     signup_button.signal_clicked().connect(sigc::mem_fun(*this, &signup_window::signup_click));
     box.pack_start(signup_button);
-    
+
     close_button.add_pixlabel("src/close.png","Close",0.5,0.5);
     close_button.signal_clicked().connect(sigc::mem_fun(*this, &signup_window::close_click));
     box.pack_start(close_button);
-    
+
     box.show_all();
     add(box);
 
@@ -191,16 +192,16 @@ void signup_window::toggle_checkbox(){
     pass_entry.set_visibility(checkbutton.get_active());
     repass_entry.set_visibility(checkbutton.get_active());
 }
-    
+
 void signup_window::signup_click(){
-    
-    
+
+
     string username, pass, repass;
 
     username = username_entry.get_text();
     pass = pass_entry.get_text();
     repass = repass_entry.get_text();
-    
+
 
     if(pass==repass){
         person p;
@@ -214,9 +215,9 @@ void signup_window::signup_click(){
         members->push_back(p);
         hide();
         MessageDialog dialog(*this,username + " signed up successfully", false, Gtk::MESSAGE_INFO);
-        
+
         dialog.run();
-        
+
         //cout<<"vector: "<<members[0].name<<endl;
     }
     else{
@@ -242,7 +243,7 @@ void main_window::close_click()
 {
     ofstream members_update;
     ofstream details_list_update;
-    
+
     members_update.open(file_person);
     if (!members_update.is_open())
     {
@@ -252,14 +253,14 @@ void main_window::close_click()
         d.run();
         std::exit(1);
     }
-    
+
     string comma = ",";
-    
+
     for(int i=0;i<g.members.size();i++)    //fix this once group object is created
     {
         members_update<<g.members[i].name<<comma<<g.members[i].get_pwd()<<comma<<g.members[i].b<<comma<<g.members[i].grp_name<<comma<<g.members[i].tot_exp_grp<<comma<<g.members[i].tot_exp_mem<<comma<<g.members[i].tot_owe<<endl;
     }
-    
+
     details_list_update.open(file_details);     //fix this once group object is created
     if (!details_list_update.is_open())
     {
@@ -269,16 +270,16 @@ void main_window::close_click()
         d.run();
         std::exit(1);
     }
-    
+
     for(int i=0;i<g.details_list.size();i++)
     {
         details_list_update<<g.details_list[i].name<<comma<<g.details_list[i].vendor<<comma<<g.details_list[i].expense<<endl;
     }
-    
+
     std::cout<<"Everything updated closing file"<<endl;        //delete if not wanted
     members_update.close();
     details_list_update.close();
-    
+
     hide();
 }
 
@@ -302,12 +303,14 @@ void main_window::login_click()
 {
   //bool ans=false;
   int check;
+    int user=0;
   string name=e1.get_text();
   //transform(name.begin(),name.end(),name.begin(),::tolower);
   string password=e2.get_text();
 
     for(int i=0; i<g.members.size();i++)
     {
+        user++;
       cout<<g.members[i].name<<endl;
       if(name=="" && password=="")
       {
@@ -334,7 +337,7 @@ void main_window::login_click()
     if(check==1)
     {
         //hide();
-        split_window sp(&(g.members),name, &g.details_list);
+        split_window sp(&(g.members),name, &g.details_list,user-1);
         Gtk::Main::run(sp);
     }
     else if(check==2)
@@ -354,45 +357,52 @@ void main_window::login_click()
 }
 
 
-split_window::split_window(vector <person>* m,string username, vector<details>*ptr)
+split_window::split_window(vector <person>* m,string username, vector<details>*ptr,int user)
 {
   //hide();
-    
+
     user_name=username;
     members=m;
     d=ptr;
-  set_title("Split App");
-  set_border_width(10);
-  resize(450,600);
-  set_position(Gtk::WIN_POS_CENTER_ALWAYS);
-  label3.set_markup("<span style=\"italic\">SPLIT!</span>");
-  vbox.pack_start(label3);
+    set_title("Split App");
+    set_border_width(10);
+    resize(450,600);
+    set_position(Gtk::WIN_POS_CENTER_ALWAYS);
+    label3.set_markup("<span style=\"italic\">SPLIT!</span>");
+    vbox.pack_start(label3);
 
-  gif_i.set("src/money.gif");
-  vbox.pack_start(gif_i);
-  label1.set_markup("\n\n<big>Total expenses of the group: $</big>\n\n");
-  hbox1.pack_start(label1);
+    gif_i.set("src/money.gif");
+    vbox.pack_start(gif_i);
 
-  label2.set_markup("\n\n<big>You owe: $</big>\n\n");
-  hbox1.pack_start(label2);
+    label4.set_markup("\n<big>Group: </big>"+g.members[user].grp_name);
+    vbox.pack_start(label4);
 
-  vbox.pack_start(hbox1);
+    float tot_exp=g.members[user].tot_exp_grp;
+    //  stringstream ss(tot_exp);
+    label1.set_markup("<big>Total group expenses: $</big>"+to_string(tot_exp)+"   \n");
+    hbox1.pack_start(label1);
 
-  button1.add_pixlabel("src/plus.png","Add new expense",0.5,0.5);
-  button1.signal_clicked().connect(sigc::mem_fun(*this, &split_window::add_expense));
-  vbox.pack_start(button1);
+    float user_owe=g.members[user].tot_owe;
+    label2.set_markup("<big>You owe: $</big>"+to_string(user_owe)+"  \n");
+    hbox1.pack_start(label2);
 
-  button2.add_pixlabel("src/pay.png","Pay",0.5,0.5);
-  button2.signal_clicked().connect(sigc::mem_fun(*this,&split_window::pay));
-  vbox.pack_start(button2);
+    vbox.pack_start(hbox1);
 
-  button3.add_pixlabel("src/details.jpg","Show Details",0.5,0.5);
-  button3.signal_clicked().connect(sigc::mem_fun(*this, &split_window::show_details));
-  vbox.pack_start(button3);
+    button1.add_pixlabel("src/plus.png","Add new expense",0.5,0.5);
+    button1.signal_clicked().connect(sigc::mem_fun(*this, &split_window::add_expense));
+    vbox.pack_start(button1);
 
-  button4.add_pixlabel("src/out.jpeg","Logout",0.5,0.5);
-  button4.signal_clicked().connect(sigc::mem_fun(*this, &split_window::log_out));
-  vbox.pack_start(button4);
+    button2.add_pixlabel("src/pay.png","Pay",0.5,0.5);
+    button2.signal_clicked().connect(sigc::mem_fun(*this,&split_window::pay));
+    vbox.pack_start(button2);
+
+    button3.add_pixlabel("src/details.jpg","Show Details",0.5,0.5);
+    button3.signal_clicked().connect(sigc::mem_fun(*this, &split_window::show_details));
+    vbox.pack_start(button3);
+
+    button4.add_pixlabel("src/out.jpeg","Logout",0.5,0.5);
+    button4.signal_clicked().connect(sigc::mem_fun(*this, &split_window::log_out));
+    vbox.pack_start(button4);
 
   vbox.show_all();
   add(vbox);
@@ -419,7 +429,7 @@ void split_window::add_expense()
     entry2->show();
     dialog->add_button("Ok",1);
     dialog->add_button("Cancel",0);
-    
+
     int result=dialog->run();
     if(result==0)
     {
@@ -432,7 +442,7 @@ void split_window::add_expense()
         temp.vendor=entry->get_text();
         temp.expense=stof(entry2->get_text());
         d->push_back(temp);
-        
+
         int i;
         for(i=0; i<(*members).size(); i++)
         {
@@ -457,10 +467,10 @@ void split_window::pay()
             index=i;
         }
     }
-    
+
     vector <person*> membersof_thisgroup;       //holds the members of a certain group name
     person* p;
-    
+
     for(int i=0;i<members->size();i++)
     {
         if(members->at(i).grp_name==group_name)
@@ -469,10 +479,10 @@ void split_window::pay()
             membersof_thisgroup.push_back(p);
         }
     }
-    
+
     std::map<std::string,int> owe_info; //hold name and how much you owe them("+" means somebody owes you)
     //"-" mean you owe them
-    
+
     float user_exp;
     for(int i=0;i<membersof_thisgroup.size();i++)
     {
@@ -482,9 +492,9 @@ void split_window::pay()
             break;
         }
     }
-    
+
     int group_size = membersof_thisgroup.size();
-    
+
     for(int i=0;i<membersof_thisgroup.size();i++)
     {
         float owe_amt;
@@ -495,13 +505,38 @@ void split_window::pay()
             owe_info.insert({membersof_thisgroup[i]->name,owe_amt});
         }
     }
-    
+
     pay_window a(membersof_thisgroup,user_name,owe_info);
     Gtk::Main::run(a);
-    
+
 }
 
-void split_window::show_details(){}
+void split_window::show_details()
+{
+    Window w;
+    Dialog *dialog =new Dialog;
+    dialog->set_transient_for(w);
+    dialog->set_border_width(50);
+    dialog->set_size_request(150,150);
+    dialog->set_title("Details");
+
+    for(int i=0;i<(*d).size();i++)
+    {
+        float f=d->at(i).expense;
+        string paid=to_string(f);
+        //string paid=to_string(g.details_list[i].expense);
+        Label *label1=new Label(d->at(i).name+" paid $"+paid+" at "+d->at(i).vendor);
+        dialog->get_content_area()->pack_start(*label1);
+        label1->show();
+    }
+
+    dialog->add_button("OK",0);
+    int i=dialog->run();
+    if(i==0)
+    {
+        dialog->close();
+    }
+}
 
 void split_window::log_out()
 {
@@ -513,33 +548,33 @@ split_window::~split_window(){}
 
 void pay_window::make_buttons(std::map<std::string,int> owe_info)
 {
-    
-    
+
+
     for(std::map<std::string, int>::iterator itr = owe_info.begin(); itr != owe_info.end(); itr++)
     {
         stringstream ss;
-        
+
         if(itr->second>0)
         {
             ss<<itr->first<<" owes you $"<<itr->second;
-            
+
         }
         if(itr->second<=0)
         {
             ss<<"You owe "<<itr->first<< "$"<<-itr->second;
-            
+
         }
         string output;
         output = ss.str();
-        
+
         //cout<<output<<endl;
-        
+
         Gtk::RadioButton* b=new Gtk::RadioButton(output);
         all_buttons.push_back(b);
-        
+
     }
-    
-    
+
+
         Gtk::RadioButton* b=new Gtk::RadioButton();
         all_buttons.push_back(b);
 }
@@ -551,28 +586,28 @@ pay_window::pay_window( vector <person*> membersof_thisgroup,string username,std
     set_border_width(0);
     make_buttons(owe_info);
     cout<<"hello frm the other side"<<endl;
-    
+
     for(int i=1;i<members.size();i++)
     {
         all_buttons[i]->join_group(*all_buttons[0]);
     }
-    
+
     add(box1);
     box1.pack_start(box2);
     box1.pack_start(line);
     box1.pack_start(box3);
-    
+
     for (int i=0;i<members.size();i++)
     {
         box2.pack_start(*all_buttons[i]);
     }
     box3.pack_start(pay);
     box3.pack_start(Close);
-    
+
     Close.set_can_default();
     Close.grab_default();
-    
+
     Close.signal_clicked().connect(sigc::mem_fun(*this, &pay_window::close));
-    
+
     show_all_children();
 }
