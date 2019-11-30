@@ -802,6 +802,11 @@ pay_window::pay_window( vector <person*> membersof_thisgroup,string username,std
             ss<<"You owe "<<itr->first<<" $"<<fixed<<setprecision(2)<<-itr->second;
             
         }
+	if(itr->second==0)
+        {
+            ss<<"You are even with "<<itr->first;
+            
+        }    
         string output;
         output = ss.str();
         
