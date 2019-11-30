@@ -794,12 +794,12 @@ pay_window::pay_window( vector <person*> membersof_thisgroup,string username,std
         
         if(itr->second>0)
         {
-            ss<<itr->first<<" owes you $"<<itr->second;
+            ss<<itr->first<<" owes you $"<<fixed<<setprecision(2)<<itr->second;
             
         }
         if(itr->second<=0)
         {
-            ss<<"You owe "<<itr->first<<" $"<<-itr->second;
+            ss<<"You owe "<<itr->first<<" $"<<fixed<<setprecision(2)<<-itr->second;
             
         }
         string output;
