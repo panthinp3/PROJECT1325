@@ -8,6 +8,7 @@ using namespace Gtk;
 
 string file_person="src/registered_members.txt";
 string file_details="src/details.txt";
+string payment_records = "src/payment_records.txt";
 
 group::group()
 {
@@ -310,7 +311,6 @@ void main_window::login_click()
 
     for(int i=0; i<g.members.size();i++)
     {
-      cout<<g.members[i].name<<endl;
       if(name=="" && password=="")
       {
         check=3;
@@ -362,7 +362,7 @@ void main_window::login_click()
         dialog->get_content_area()->pack_start(*entry1);
 
 
-        Label *label2 = new Label("Enter number of members:");
+        Label *label2 = new Label("Enter number of members to be added:");
         dialog->get_content_area()->pack_start(*label2);
         label2->show();
 
@@ -407,6 +407,7 @@ void main_window::login_click()
 split_window::split_window(vector <person>* m,string username, vector<details>*ptr)
 {
   //hide();
+
     
     user_name=username;
     members=m;
@@ -423,8 +424,10 @@ split_window::split_window(vector <person>* m,string username, vector<details>*p
     int i;
     for(i=0; i< (*members).size() ; i++)
     {
-        if(user_name==members->at(i).name)
+        if(user_name==members->at(i).name){
+        	group_name = members->at(i).grp_name;
             break;
+        }
     }
     label2.set_markup("Group: " + members->at(i).grp_name);
     vbox.pack_start(label2);
@@ -462,6 +465,17 @@ split_window::split_window(vector <person>* m,string username, vector<details>*p
 
 void split_window::add_expense()
 {
+	vector <person*> membersof_thisgroup;
+	for(int i=0;i<members->size();i++)
+    {
+        if(members->at(i).grp_name==group_name)
+        {
+            membersof_thisgroup.push_back(&(members->at(i)));
+        }
+    }
+
+
+
     Window w;
     Dialog* dialog= new Dialog();
     dialog->set_transient_for(w);
@@ -487,8 +501,8 @@ void split_window::add_expense()
     {
         delete(dialog);
     }
-    else
-    {
+    else{
+    	hide();
         details temp;
         temp.name=user_name;
         temp.vendor=entry->get_text();
@@ -496,17 +510,27 @@ void split_window::add_expense()
         d->push_back(temp);
         
         int i;
-        for(i=0; i<(*members).size(); i++)
+        for(i=0; i<membersof_thisgroup.size(); i++)
         {
-            if(members->at(i).name == user_name)
-            {
-                members->at(i).tot_exp_mem += stof(entry2->get_text());
-            }
-             members->at(i).tot_exp_grp += stof(entry2->get_text());
+             if(membersof_thisgroup.at(i)->name == user_name)
+             {
+                 membersof_thisgroup.at(i)->tot_exp_mem += stof(entry2->get_text());
+             }
+             membersof_thisgroup.at(i)->tot_exp_grp += stof(entry2->get_text());
         }
         delete (dialog);
+        split_window sp(members, user_name, d);
+        Gtk::Main::run(sp);
+
+    	float break_even = membersof_thisgroup[0]->tot_exp_grp/ membersof_thisgroup.size();
+    
+   	 	for(int i=0; i<membersof_thisgroup.size(); i++){
+        	membersof_thisgroup[i]->tot_owe = membersof_thisgroup[i]->tot_exp_mem-break_even;
+    	}
     }
+
 }
+
 void split_window::pay()
 {
     string group_name;
@@ -532,10 +556,65 @@ void split_window::pay()
         }
     }
     
-    std::map<std::string,int> owe_info; //hold name and how much you owe them("+" means somebody owes you)
-    //"-" mean you owe them
-    
+
+    std::map<std::string,float> owe_info; //hold name and how much you owe them("+" means somebody owes you)
+//"-" mean you owe them
+    float owe_amt;
     float user_exp;
+    int group_size = membersof_thisgroup.size();
+    float tempf = 0.0;
+
+    float paid[group_size];
+    float received[group_size];
+    for(int i = 0; i < group_size; i++){
+        paid[i] = 0;
+        received[i] = 0; 
+    }
+    string line;
+    string temp;
+    ifstream payFile;
+    payFile.open(payment_records);
+    if(!payFile.is_open())
+    {
+        cout<<"Could't open payment file. exiting..."<<endl;
+        exit(1);
+    }
+    while(!payFile.eof())
+    {
+        getline(payFile,line);
+        stringstream ss(line);
+        getline(ss, temp, ',');
+
+
+        if(temp == user_name){
+            getline(ss, temp, ',');
+            for(int i=0;i<membersof_thisgroup.size();i++){
+                if(temp == membersof_thisgroup[i]->name){
+                    getline(ss, temp);
+                    tempf = stof(temp);
+                    paid[i] = paid[i] + tempf;
+                }                  
+            }
+        }
+
+
+
+        else{
+            for(int i=0;i<membersof_thisgroup.size();i++){
+                if(temp == membersof_thisgroup[i]->name){
+                    getline(ss, temp,',');
+                    if(temp == user_name){
+                        getline(ss, temp);
+                        tempf = stof(temp);
+                        received[i] = received[i] + tempf;    
+                    }
+                }   
+            }
+
+        }
+    }    
+
+    
     for(int i=0;i<membersof_thisgroup.size();i++)
     {
         if(membersof_thisgroup[i]->name==user_name)
@@ -545,22 +624,21 @@ void split_window::pay()
         }
     }
     
-    int group_size = membersof_thisgroup.size();
-    
+
     for(int i=0;i<membersof_thisgroup.size();i++)
     {
-        float owe_amt;
+        
         if(membersof_thisgroup[i]->name!=user_name)
         {
-            owe_amt = (user_exp-membersof_thisgroup[i]->tot_exp_mem)/group_size;
+            owe_amt = ((user_exp - membersof_thisgroup[i]->tot_exp_mem)/3) + paid[i] - received[i];
             members->at(index).tot_owe+=owe_amt;
+
             owe_info.insert({membersof_thisgroup[i]->name,owe_amt});
         }
     }
-    
+
     pay_window a(membersof_thisgroup,user_name,owe_info);
-    Gtk::Main::run(a);
-    
+    Gtk::Main::run(a);    
 }
 
 void split_window::show_details()
@@ -604,6 +682,7 @@ split_window::~split_window(){}
 
 void pay_window::pay_to()
 {
+	
     Window w;
     Dialog *dialog =new Dialog;
     dialog->set_transient_for(w);
@@ -637,35 +716,55 @@ void pay_window::pay_to()
     
     
     int result = dialog->run();
+
     
     if(result==0)
     {
         dialog->close();
         
     }
-    else if(result==1)
-    {
+    else if(result==1){
+
         string pay_who = name->get_text();
         float pay_how_much = stof(amount->get_text());
+
+ 
 
         for(int i=0; i<members.size(); i++)
         {
             if(members[i]->name==user_name)
             {
-                members[i]->tot_exp_mem+=pay_how_much;
-                members[i]->tot_owe-=pay_how_much;
+                members[i]->tot_owe = members[i]->tot_owe - pay_how_much;
             }
             if(members[i]->name==pay_who)
             {
-                members[i]->tot_exp_mem-=pay_how_much;
-                members[i]->tot_owe+=pay_how_much;
+                members[i]->tot_owe = members[i]->tot_owe + pay_how_much;
             }
+
         }
+
         stringstream ss;
         ss<<"You paid "<<pay_who<<" $"<<amount->get_text();
         MessageDialog d(*this, ss.str(), false, Gtk::MESSAGE_INFO);
         d.run();
-       dialog->close();
+        dialog->close();
+
+        ofstream payment;
+    
+        payment.open(payment_records, std::ios_base::app);
+        if (!payment.is_open())
+        {
+            stringstream message;
+            message << "Unable to open file \""<<file_person<<"\"";
+            Gtk::MessageDialog d(*this, message.str(),false,Gtk::MESSAGE_INFO);
+            d.run();
+            std::exit(1);
+        }
+    
+        string comma = ",";
+    
+        payment<<user_name<<comma<<pay_who<<comma<<pay_how_much<<endl;  
+    
     }
      
     delete dialog;
@@ -673,27 +772,23 @@ void pay_window::pay_to()
     delete label2;
     delete name;
     delete amount;
+
+
 }
 
-pay_window::pay_window( vector <person*> membersof_thisgroup,string username,std::map<std::string,int> map_info):Close("close"),pay("Pay")
+pay_window::pay_window( vector <person*> membersof_thisgroup,string username,std::map<std::string,float> map_info):Close("close"),pay("Pay")
 {
     owe_info = map_info;
     members= membersof_thisgroup;
     user_name=username;
-    float break_even = members[0]->tot_exp_grp/ members.size() ;
     
-    for(int i=0; i<members.size(); i++)
-    {
-        members[i]->tot_owe=members[i]->tot_exp_mem-break_even;
-        
-    }
     
     set_title("Pay");
     set_size_request(400,400);
     set_border_width(10);
     
     add(vbox);
-    for(std::map<std::string, int>::iterator itr = owe_info.begin(); itr != owe_info.end(); itr++)
+    for(std::map<std::string, float>::iterator itr = owe_info.begin(); itr != owe_info.end(); itr++)
     {
         stringstream ss;
         
