@@ -630,7 +630,7 @@ void split_window::pay()
         
         if(membersof_thisgroup[i]->name!=user_name)
         {
-            owe_amt = ((user_exp - membersof_thisgroup[i]->tot_exp_mem)/3) + paid[i] - received[i];
+            owe_amt = ((user_exp - membersof_thisgroup[i]->tot_exp_mem)/group_size) + paid[i] - received[i];
             members->at(index).tot_owe+=owe_amt;
 
             owe_info.insert({membersof_thisgroup[i]->name,owe_amt});
