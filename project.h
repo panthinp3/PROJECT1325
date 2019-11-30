@@ -108,8 +108,9 @@ public:
     
 protected:
   string user_name;
+  string group_name;
   vector <person>* members;
-    vector <details>* d;
+  vector <details>* d;
   Label label1,label2,label3;
   Image gif_i;
   Button button1,button2,button3,button4;
@@ -123,15 +124,14 @@ protected:
 };
 
 class pay_window:public Window{
-    std::vector<Gtk::RadioButton*> all_buttons; 
 public:
     
-    pay_window( vector <person*> membersof_thisgroup,string username,std::map<std::string,int> map_info);
+    pay_window( vector <person*> membersof_thisgroup,string username,std::map<std::string,float> map_info);
     
     void pay_to();
 protected:
     vector <shared_ptr<Label>> labels;
-    std::map<std::string,int> owe_info;
+    std::map<std::string,float> owe_info;
     vector <person*> members;
     string user_name;
     void on_button_clicked();
