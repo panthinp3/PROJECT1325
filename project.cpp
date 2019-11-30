@@ -708,7 +708,7 @@ void pay_window::pay_to()
     label2->show();
     
     Gtk::Entry *amount = new Gtk::Entry();
-    amount->set_text("default_text");
+    amount->set_text("$");
     amount->set_max_length(50);
     amount->show();
     dialog->get_vbox()->pack_start(*amount);
@@ -792,21 +792,21 @@ pay_window::pay_window( vector <person*> membersof_thisgroup,string username,std
     {
         stringstream ss;
         
-        if(itr->second>0)
+        if(-0.01<=itr->second && itr->second<=0.01)
+        {
+            ss<<"You are even with "<<itr->first;
+            
+        }
+        else if(itr->second>0)
         {
             ss<<itr->first<<" owes you $"<<fixed<<setprecision(2)<<itr->second;
             
         }
-        if(itr->second<=0)
+        else if(itr->second<0)
         {
             ss<<"You owe "<<itr->first<<" $"<<fixed<<setprecision(2)<<-itr->second;
             
         }
-	if(itr->second==0)
-        {
-            ss<<"You are even with "<<itr->first;
-            
-        }    
         string output;
         output = ss.str();
         
