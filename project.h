@@ -68,8 +68,9 @@ public:
 protected:
     Button b1,b2,b3;  //b1=login, b2=signup, b3=close
     Entry e1,e2;
-    Label l1,l2,l3;      //enter name and pwd and SPLIT!
+    Label l1,l2;      //enter name and pwd
     Image gif_i;        //gif file
+    Image s;
     VBox box;
     CheckButton checkbutton;
     
@@ -111,8 +112,9 @@ protected:
   string group_name;
   vector <person>* members;
   vector <details>* d;
-  Label label1,label2,label3;
+  Label label1,label2;
   Image gif_i;
+    Image s;
   Button button1,button2,button3,button4;
   VBox vbox;
   HBox hbox1,hbox2,hbox3;
