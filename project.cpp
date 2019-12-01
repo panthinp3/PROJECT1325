@@ -85,12 +85,12 @@ main_window::main_window()
 {
     set_title("User Login");
     set_border_width(30);
-    resize(450,700);
+    resize(450,720);
     set_position(Gtk::WIN_POS_CENTER_ALWAYS);
     box.set_spacing(10);
     
-    l3.set_markup("<span style=\"italic\">SPLIT!</span>");
-    box.pack_start(l3);
+    s.set("src/Split.png");
+    box.pack_start(s);
     
     gif_i.set("src/money.gif");
     box.pack_start(gif_i);
@@ -136,7 +136,7 @@ signup_window::signup_window(vector <person>* m){
     members=m;
     set_title("User Sign Up");
     set_border_width(30);
-    resize(450,700);
+    resize(450,720);
     set_position(Gtk::WIN_POS_CENTER_ALWAYS);
     box.set_spacing(10);
 
@@ -414,11 +414,14 @@ split_window::split_window(vector <person>* m,string username, vector<details>*p
     d=ptr;
   set_title("Split App");
   set_border_width(10);
-  resize(450,700);
+  resize(450,720);
   set_position(Gtk::WIN_POS_CENTER_ALWAYS);
-  label3.set_markup("<span style=\"italic\">SPLIT!</span>");
-  vbox.pack_start(label3);
-
+    
+    
+    s.set("src/Split.png");
+    vbox.pack_start(s);
+  //label3.set_markup("<span style=\"italic\">SPLIT!</span>");
+  //vbox.pack_start(label3);
     gif_i.set("src/money.gif");
   vbox.pack_start(gif_i);
     int i;
