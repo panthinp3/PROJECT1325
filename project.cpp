@@ -780,15 +780,17 @@ void pay_window::pay_to()
 
 }
 
-pay_window::pay_window( vector <person*> membersof_thisgroup,string username,std::map<std::string,float> map_info):Close("close"),pay("Pay")
+pay_window::pay_window( vector <person*> membersof_thisgroup,string username,std::map<std::string,float> map_info)
 {
+    set_position(Gtk::WIN_POS_CENTER_ALWAYS);
+
     owe_info = map_info;
     members= membersof_thisgroup;
     user_name=username;
     
     
     set_title("Pay");
-    set_size_request(400,400);
+    set_size_request(450,300);
     set_border_width(10);
     
     add(vbox);
@@ -825,6 +827,8 @@ pay_window::pay_window( vector <person*> membersof_thisgroup,string username,std
         vbox.pack_start(*labels.at(i));
     }
     
+    pay.add_pixlabel("src/paybutton.png","",0,0);
+    Close.add_pixlabel("src/cancel.png","Close",0.5,0.5);
     pay.signal_pressed().connect(sigc::mem_fun(*this,&pay_window::pay_to));
     vbox.pack_start(pay);
     Close.signal_pressed().connect(sigc::mem_fun(*this,&pay_window::close));
