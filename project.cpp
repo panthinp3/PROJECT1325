@@ -219,7 +219,6 @@ void signup_window::signup_click(){
         
         dialog.run();
         
-        //cout<<"vector: "<<members[0].name<<endl;
     }
     else{
         MessageDialog dialog(*this, "Passwords doesn't match! Enter Again.", false, Gtk::MESSAGE_INFO);
@@ -232,8 +231,6 @@ void signup_window::close_click(){
 }
 
 
-
-//void main_window::login_click(){}
 
 void main_window::signup_click(){
     signup_window window(&(g.members));
@@ -489,12 +486,14 @@ void split_window::add_expense()
     dialog->get_vbox()->pack_start(*label);
     label->show();
     Entry* entry = new Entry();
+    entry->set_placeholder_text("eg: Walmart");
     dialog->get_vbox()->pack_start(*entry);
     entry->show();
-    Label* label2 = new Gtk::Label("Enter amount spent: ");
+    Label* label2 = new Gtk::Label("Enter amount spent ($): ");
     dialog->get_vbox()->pack_start(*label2);
     label2->show();
     Entry* entry2 = new Entry();
+    entry2->set_placeholder_text("eg: 40");
     dialog->get_vbox()->pack_start(*entry2);
     entry2->show();
     dialog->add_button("Ok",1);
@@ -503,6 +502,10 @@ void split_window::add_expense()
     int result=dialog->run();
     if(result==0)
     {
+        delete(label);
+        delete(entry);
+        delete(label2);
+        delete(entry2);
         delete(dialog);
     }
     else{
@@ -679,14 +682,11 @@ void split_window::show_details()
 void split_window::log_out()
 {
   hide();
-  //main_window m1;
-  //Gtk::Main::run(m1);
 }
 split_window::~split_window(){}
 
 void pay_window::pay_to()
 {
-	
     Window w;
     Dialog *dialog =new Dialog;
     dialog->set_transient_for(w);
@@ -731,9 +731,6 @@ void pay_window::pay_to()
 
         string pay_who = name->get_text();
         float pay_how_much = stof(amount->get_text());
-
- 
-
         for(int i=0; i<members.size(); i++)
         {
             if(members[i]->name==user_name)
@@ -746,13 +743,13 @@ void pay_window::pay_to()
             }
 
         }
+        delete dialog;
+        hide();
 
         stringstream ss;
         ss<<"You paid "<<pay_who<<" $"<<amount->get_text();
         MessageDialog d(*this, ss.str(), false, Gtk::MESSAGE_INFO);
         d.run();
-        dialog->close();
-
         ofstream payment;
     
         payment.open(payment_records, std::ios_base::app);
@@ -766,18 +763,13 @@ void pay_window::pay_to()
         }
     
         string comma = ",";
-    
         payment<<user_name<<comma<<pay_who<<comma<<pay_how_much<<endl;  
     
     }
-     
-    delete dialog;
     delete label1;
     delete label2;
     delete name;
     delete amount;
-
-
 }
 
 pay_window::pay_window( vector <person*> membersof_thisgroup,string username,std::map<std::string,float> map_info)
@@ -942,7 +934,6 @@ void new_group_window::add_clicked(){
     }
 
 }
-
 void new_group_window::cancel_clicked(){
     hide();
 }
