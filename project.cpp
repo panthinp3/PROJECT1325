@@ -650,23 +650,24 @@ void split_window::pay()
 
 void split_window::show_details()
 {
-    Window w;
+     Window w;
     Dialog *dialog =new Dialog;
     dialog->set_transient_for(w);
-    dialog->set_border_width(50);
+    dialog->set_border_width(10);
     dialog->set_size_request(150,150);
     dialog->set_title("Details");
+    Label *label2=new Label("Recent activities\n");
+    dialog->get_content_area()->pack_start(*label2);
+    label2->show();
 
     for(int i=0;i<(*d).size();i++)
     {
         float f=d->at(i).expense;
-        //string paid=to_string(f);
-        
         stringstream ss;
         ss<<fixed<<setprecision(2)<<f<<endl;
         string format;
         getline(ss,format);
-        Label *label1=new Label(d->at(i).name+" paid $"+format+" at "+d->at(i).vendor);
+        Label *label1=new Label(to_string(i+1)+". "+d->at(i).name+" paid $"+format+" at "+d->at(i).vendor+"\n");
         dialog->get_content_area()->pack_start(*label1);
         label1->show();
     }
