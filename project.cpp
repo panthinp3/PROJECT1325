@@ -413,8 +413,9 @@ split_window::split_window(vector <person>* m,string username, vector<details>*p
     members=m;
     d=ptr;
   set_title("Split App");
-  set_border_width(10);
+  set_border_width(30);
   resize(450,720);
+    vbox.set_spacing(10);
   set_position(Gtk::WIN_POS_CENTER_ALWAYS);
     
     
