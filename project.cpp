@@ -421,8 +421,6 @@ split_window::split_window(vector <person>* m,string username, vector<details>*p
     
     s.set("src/Split.png");
     vbox.pack_start(s);
-  //label3.set_markup("<span style=\"italic\">SPLIT!</span>");
-  //vbox.pack_start(label3);
     gif_i.set("src/money.gif");
   vbox.pack_start(gif_i);
     int i;
@@ -436,12 +434,14 @@ split_window::split_window(vector <person>* m,string username, vector<details>*p
     label2.set_markup("Group: " + members->at(i).grp_name);
     vbox.pack_start(label2);
     
+   label3.set_markup("User: " + user_name);
+    vbox.pack_start(label3);
     
     stringstream ss;
     ss<<fixed<<setprecision(2)<<members->at(i).tot_exp_grp<<endl;
     string format;
     getline(ss,format);
-  label1.set_markup("\n\n<big>Total expenses of the group: $</big>" + format);
+  label1.set_markup("\n<big>Total expenses of the group: $</big>" + format);
   hbox1.pack_start(label1);
 
 
