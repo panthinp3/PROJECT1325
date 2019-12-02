@@ -112,7 +112,7 @@ protected:
   string group_name;
   vector <person>* members;
   vector <details>* d;
-  Label label1,label2;
+  Label label1,label2,label3;
   Image gif_i;
     Image s;
   Button button1,button2,button3,button4;
